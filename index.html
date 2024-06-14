@@ -1458,6 +1458,16 @@
     </div>
   
     <script src="./statics/jquery/jquery-3.7.1.slim.min.js"></script>
+    <script src="https://maper.info/map-su-2.js"></script>
+	  <script>
+	    $(function(){
+        $("audio").on("play", function() {
+            $("audio").not(this).each(function(index, audio) {
+                audio.pause();
+            });
+        });
+    });
+	  </script>
     <script src="./statics/bootstrap-5.2.3-dist/bootstrap.min.js"></script>
   </body>
 </html>
