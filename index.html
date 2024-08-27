@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <title>StyleTTS-ZS Demo</title>
+    <link href="./statics/bootstrap-5.2.3-dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./statics/my.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="container pt-5 mt-5 shadow p-5 mb-5 bg-white rounded">
+          <h2 style="text-align: center">StyleTTS-ZS: Efficient High-Quality Zero-Shot Text-to-Speech Synthesis with Distilled Time-Varying Style Diffusion<br>
+            <small></small>
+          </h2><br>
+          <div class="github d-flex justify-content-center" style="margin-bottom: 16px;">
+            <table class="mx-auto">
+              <tbody>
+                <tr>
+                  <td>
+                    <a href="#">[arXiv]</a>
+                  </td>
+                  <td>
+                    <a href="#">[GitHub Repo]</a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <h3>Abstract</h3>
+          <p class="lead">
+        The rapid development of large-scale text-to-speech (TTS) models has led to significant advancements in modeling diverse speaker prosody and voices. However, these models often face issues such as slow inference speeds, reliance on complex pre-trained neural codec representations, and difficulties in achieving naturalness and high similarity to reference speakers. To address these challenges, this work introduces StyleTTS-ZS, an efficient zero-shot TTS model that leverages distilled time-varying style diffusion to capture diverse speaker identities and prosodies. We propose a novel approach that represents human speech using input text and fixed-length time-varying discrete style codes to capture diverse prosodic variations, trained adversarially with multi-modal discriminators. A diffusion model is then built to sample this time-varying style code for efficient latent diffusion. Using classifier-free guidance, StyleTTS-ZS achieves high similarity to the reference speaker in the style diffusion process. Furthermore, to expedite sampling, the style diffusion model is distilled with perceptual loss using only 10k samples, maintaining speech quality and similarity while reducing inference speed by 90%. Our model surpasses previous state-of-the-art large-scale zero-shot TTS models in both naturalness and similarity, offering a 10-20× faster sampling speed, making it an attractive alternative for efficient large-scale zero-shot TTS systems.
+        </p>
+        </div>
+        <div class="container pt-5 mt-5 shadow p-5 mb-5 bg-white rounded">
+          <h3>Comparision with Small Scale Models</h3>
+          <p class="lead">
+                This section contain audio samples from our model trained on LibriTTS (LT) and LibriLight (LL) and all public models on Table 2. All speakers are unseen during training and samples were obtained from publicly avaiable checkpoints. 
+                </p>
+          <div class="table-responsive" style="overflow-x: scroll">
+            <table class="table table-sm">
+              <tbody>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">Text</th>
+                  <td>
+                    <p>Your play must be not merely a good play, but a successful one.</p>
+                  </td>
+                  <td>
+                    <p>Whatever appealed to her sense of beauty was straightway transferred to paper or canvas.</p>
+                  </td>
+                  <td>
+                    <p>But the general distinction is not on that account to be overlooked.</p>
+                  </td>
+                  <td>
+                    <p>Federal judges and United States attorneys in Utah, who were not Mormons nor lovers of Mormonism, refused to entertain complaints or prosecute cases under the law because of its manifest injustice and inadequacy.</p>
+                  </td>
+                  <td>
+                    <p>Why fades the lotus of the water?</p>
+                  </td>
+                  <td>
+                    <p>&quot;Nine thousand years have elapsed since she founded yours, and eight thousand since she founded ours,&quot; as our annals record.</p>
+                  </td>
+                  <td>
+                    <p>The two young men, who were by this time full of the adventure, went down to the Wall Street office of Henry's uncle and had a talk with that wily operator.</p>
+                  </td>
+                  <td>
+                    <p>&quot;What is your country, Olaf? Have you always been a thrall?&quot; The thrall's eyes flashed.</p>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">Prompt</th>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/prompt/7.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/prompt/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/prompt/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/prompt/4.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/prompt/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/prompt/6.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/prompt/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/prompt/8.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">StyleTTS-ZS (LT)</th>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/lt/7.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/lt/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/lt/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/lt/4.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/lt/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/lt/6.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/lt/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/lt/8.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">StyleTTS-ZS (LL)</th>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/ll/7.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/ll/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/ll/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/ll/4.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/ll/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/ll/6.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/ll/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/ll/8.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">HierSpeech++</th>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/hierspeech/7.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/hierspeech/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/hierspeech/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/hierspeech/4.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/hierspeech/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/hierspeech/6.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/hierspeech/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/hierspeech/8.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">StyleTTS 2</th>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/stts2/7.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/stts2/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/stts2/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/stts2/4.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/stts2/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/stts2/6.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/stts2/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/stts2/8.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">XTTS-v2</th>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/xtts2/7.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/xtts2/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/xtts2/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/xtts2/4.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/xtts2/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/xtts2/6.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/xtts2/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/xtts2/8.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">Ground Truth</th>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/gt/7.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/gt/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/gt/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/gt/4.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/gt/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/gt/6.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/gt/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LT/gt/8.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="small">* please scroll horizontally to see more samples (8 samples total).</p>
+        </div>
+        <div class="container pt-5 mt-5 shadow p-5 mb-5 bg-white rounded">
+          <h3>Comparision with Large Scale Models I</h3>
+          <p class="lead">
+                This section contain audio samples from our model trained on LibriLight (LL) and part of models on Table 1. Since all samples (except VoiceCraft) are obatined from the public demo page of each corresponding model, we divide this section into three parts for the better layout. For the source of each model, please refer to Appendix C.1 for more information.
+                </p>
+          <div class="table-responsive" style="overflow-x: scroll">
+            <table class="table table-sm">
+              <tbody>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">Text</th>
+                  <td>
+                    <p>For a few miles, she followed the line hitherto presumably occupied by the coast of Algeria, but no land appeared to the south.	</p>
+                  </td>
+                  <td>
+                    <p>I had always known him to be restless in his manner, but on this particular occasion he was in such a state of uncontrollable agitation that it was clear something very unusual had occurred.	</p>
+                  </td>
+                  <td>
+                    <p>His death in this conjuncture was a public misfortune.	</p>
+                  </td>
+                  <td>
+                    <p>It is this that is of interest to theory of knowledge. </p>
+                  </td>
+                  <td>
+                    <p>Indeed, there were only one or two strangers who could be admitted among the sisters without producing the same result.</p>
+                  </td>
+                  <td>
+                    <p>Their piety would be like their names, like their faces, like their clothes, and it was idle for him to tell himself that their humble and contrite hearts it might be paid a far-richer tribute of devotion than his had ever been. A gift tenfold more acceptable than his elaborate adoration.</p>
+                  </td>
+                  <td>
+                    <p>The air and the earth are curiously mated and intermingled as if the one were the breath of the other.	</p>
+                  </td>
+                  <td>
+                    <p>For if he's anywhere on the farm, we can send for him in a minute.</p>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">Prompt</th>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/prompt/4.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/prompt/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/prompt/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/prompt/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/prompt/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/prompt/6.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/prompt/7.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/prompt/8.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">StyleTTS-ZS (LL)</th>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/styletts/4.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/styletts/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/styletts/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/styletts/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/styletts/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/styletts/6.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/styletts/7.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/styletts/8.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">NaturalSpeech 2</th>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/ns2/4.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/ns2/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/ns2/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/ns2/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/ns2/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/ns2/6.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/ns2/7.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/ns2/8.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">NaturalSpeech 3</th>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/ns3/4.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/ns3/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/ns3/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/ns3/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/ns3/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/ns3/6.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/ns3/7.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/ns3/8.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">FlashSpeech</th>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/flashspeech/4.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/flashspeech/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/flashspeech/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/flashspeech/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/flashspeech/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/flashspeech/6.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/flashspeech/7.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/flashspeech/8.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">CLaM-TTS</th>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/clamtts/4.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/clamtts/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/clamtts/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/clamtts/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/clamtts/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/clamtts/6.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/clamtts/7.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/clamtts/8.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">DiTTo-TTS</th>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/dittotts/4.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/dittotts/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/dittotts/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/dittotts/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/dittotts/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/dittotts/6.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/dittotts/7.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/dittotts/8.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">VoiceCraft</th>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/voicecraft/4.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/voicecraft/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/voicecraft/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/voicecraft/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/voicecraft/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/voicecraft/6.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/voicecraft/7.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/voicecraft/8.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">Ground Truth</th>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/gt/4.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/gt/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/gt/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/gt/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/gt/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/gt/6.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/gt/7.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_1/gt/8.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="small">* please scroll horizontally to see more samples (8 samples total).</p>
+        </div>
+        <div class="container pt-5 mt-5 shadow p-5 mb-5 bg-white rounded">
+          <h3>Comparision with Large Scale Models II</h3>
+          <p class="lead">
+                This section contain audio samples from our model trained on LibriLight (LL) and part of models on Table 1. Since all samples (except VoiceCraft) are obatined from the public demo page of each corresponding model, we divide this section into three parts for the better layout. For the source of each model, please refer to Appendix C.1 for more information.
+                </p>
+          <div class="table-responsive" style="overflow-x: scroll">
+            <table class="table table-sm">
+              <tbody>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">Text</th>
+
+                  <td>
+                    <p>The strong position held by the Edison system under the strenuous competition that was already springing up was enormously improved by the introduction of the three wire system and it gave an immediate impetus to incandescent lighting.</p>
+                  </td>
+                  <td>
+                    <p>For, like as not, they must have thought him a prince when they saw his fine cap.</p>
+                  </td>
+                  <td>
+                    <p>What you had best do, my child, is to keep it and pray to it that since it was a witness to your undoing, it will deign to vindicate your cause by its righteous judgment.</p>
+                  </td>
+                  <td>
+                    <p>It is this that is of interest to theory of knowledge.</p>
+                  </td>
+                  <td>
+                    <p>Yea, his honourable worship is within, but he hath a godly minister or two with him, and likewise a leech.</p>
+                  </td>
+                  <td>
+                    <p>Instead of shoes, the old man wore boots with turnover tops, and his blue coat had wide cuffs of gold braid.</p>
+                  </td>
+                  <td>
+                    <p>The army found the people in poverty, and left them in comparative wealth.</p>
+                  </td>
+                  <td>
+                    <p>He was in deep converse with the clerk and entered the hall holding him by the arm.</p>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">Prompt</th>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/prompt/4.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/prompt/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/prompt/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/prompt/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/prompt/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/prompt/6.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/prompt/7.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/prompt/8.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">StyleTTS-ZS (LL)</th>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/styletts/4.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/styletts/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/styletts/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/styletts/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/styletts/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/styletts/6.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/styletts/7.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/styletts/8.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">NaturalSpeech 2</th>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/ns2/4.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/ns2/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/ns2/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/ns2/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/ns2/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td class="center-text">—</td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/ns2/7.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td class="center-text">—</td>
+                </tr>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">NaturalSpeech 3</th>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/ns3/4.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/ns3/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/ns3/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/ns3/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td class="center-text">—</td>
+                  <td class="center-text">—</td>
+                  <td class="center-text">—</td>
+                  <td class="center-text">—</td>
+                </tr>
+
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">FlashSpeech</th>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/flashspeech/4.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/flashspeech/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/flashspeech/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/flashspeech/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/flashspeech/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/flashspeech/6.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/flashspeech/7.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/flashspeech/8.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">MegaTTS 2</th>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/megatts2/4.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/megatts2/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/megatts2/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/megatts2/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/megatts2/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/megatts2/6.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/megatts2/7.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/megatts2/8.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">VoiceBox</th>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/voicebox/4.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/voicebox/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/voicebox/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/voicebox/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td class="center-text">—</td>
+                  <td class="center-text">—</td>
+                  <td class="center-text">—</td>
+                  <td class="center-text">—</td>
+                </tr>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">CLaM-TTS</th>
+                  <td class="center-text">—</td>
+                  <td class="center-text">—</td>
+                  <td class="center-text">—</td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/clamtts/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/clamtts/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                      <audio controls="" preload="none" style="width: 240px">
+                        <source src="./samples/LL_2/clamtts/6.wav" type="audio/wav">
+                      </audio>
+                    </td>    <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/clamtts/7.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                      <audio controls="" preload="none" style="width: 240px">
+                        <source src="./samples/LL_2/clamtts/8.wav" type="audio/wav">
+                      </audio>
+                    </td>
+                </tr>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">DiTTo-TTS</th>
+                  <td class="center-text">—</td>
+                  <td class="center-text">—</td>
+                  <td class="center-text">—</td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/dittotts/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/dittotts/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                      <audio controls="" preload="none" style="width: 240px">
+                        <source src="./samples/LL_2/dittotts/6.wav" type="audio/wav">
+                      </audio>
+                    </td>    <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/dittotts/7.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                      <audio controls="" preload="none" style="width: 240px">
+                        <source src="./samples/LL_2/dittotts/8.wav" type="audio/wav">
+                      </audio>
+                    </td>
+                </tr>
+
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">Vall-E</th>
+                  <td class="center-text">—</td>
+                  <td class="center-text">—</td>
+                  <td class="center-text">—</td>
+                  <td class="center-text">—</td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/valle/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/valle/6.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/valle/7.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/valle/8.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">Ground Truth</th>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/gt/4.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/gt/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/gt/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/gt/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/gt/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/gt/6.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/gt/7.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_2/gt/8.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="small">* please scroll horizontally to see more samples (8 samples total).</p>
+        </div>
+        <div class="container pt-5 mt-5 shadow p-5 mb-5 bg-white rounded">
+          <h3>Comparision with VoiceBox</h3>
+          <p class="lead">
+                This section contain audio samples from our model trained on LibriLight (LL) and VoiceBox samples from its official demo page.
+                </p>
+          <div class="table-responsive" style="overflow-x: scroll">
+            <table class="table table-sm">
+              <tbody>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">Text</th>
+                  <td>
+                    <p>And the whole night the tree stood still and in deep thought</p>
+                  </td>
+                  <td>
+                    <p>And lay me down in thy cold bed and leave my shining lot</p>
+                  </td>
+                  <td>
+                    <p>Instead of shoes the old man wore boots with turnover tops and his blue coat had wide cuffs of gold braid</p>
+                  </td>
+                  <td>
+                    <p>The army found the people in poverty and left them in comparative wealth	</p>
+                  </td>
+                  <td>
+                    <p>He was in deep converse with the clerk and entered the hall holding him by the arm	</p>
+                  </td>
+                  <td>
+                    <p>Number ten fresh nelly is waiting on you good night husband	</p>
+                  </td>
+                  <td>
+                    <p>How much wood could a woodchuck chuck if a woodchuck could chuck wood</p>
+                  </td>
+                  <td>
+                    <p>When feline magicians enchant the city and crafty canine illusionists work to restore balance, don’t miss the uproarious clash in ‘magic and mischief: the paws of mystery.’</p>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">Prompt</th>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_3/prompt/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_3/prompt/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_3/prompt/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_3/prompt/4.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_3/prompt/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_3/prompt/6.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_3/prompt/7.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_3/prompt/8.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">StyleTTS-ZS (LL)</th>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_3/styletts/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_3/styletts/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_3/styletts/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_3/styletts/4.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_3/styletts/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_3/styletts/6.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_3/styletts/7.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_3/styletts/8.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" style="position: sticky; left: 0; z-index:10; opacity: 1.0; background-color: white;">VoiceBox</th>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_3/voicebox/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_3/voicebox/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_3/voicebox/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_3/voicebox/4.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_3/voicebox/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_3/voicebox/6.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_3/voicebox/7.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 240px">
+                      <source src="./samples/LL_3/voicebox/8.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="small">* please scroll horizontally to see more samples (8 samples total).</p>
+        </div>
+        <div class="container pt-5 mt-5 shadow p-5 mb-5 bg-white rounded">
+          <h3>Speech Editing</h3>
+          <p class="lead">
+                In this section, we compare our model's ability in speech editing with other models.
+                </p>
+          <p class="lead">The following audio samples are obtained from 
+            <a href="https://jasonppy.github.io/VoiceCraft_web/">VoiceCraft's demo page</a>.
+          </p>
+          <p class="lead"><strong>Text: </strong>Will find himself completely at a loss on <span style="text-decoration: line-through black; color: lightcoral;">occasions of common and constant recurrence</span> <span style="color: lightblue;">rare and unpredictable circumstances</span>, speculative ability is one thing and practical ability is another.</p>
+          <div class="table-responsive">
+            <table class="table">
+              <tbody>
+                <tr>
+                  <td>Original</td>
+                  <td>StyleTTS-ZS</td>
+                  <td>VoiceBox</td>
+                  <td>VoiceCraft</td>
+                </tr>
+                <tr>
+                  <td>
+                    <audio controls="" preload="none" style="width: 250px">
+                      <source src="./samples/edit/original/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 250px">
+                      <source src="./samples/edit/styletts/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 250px">
+                      <source src="./samples/edit/voicebox/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 250px">
+                      <source src="./samples/edit/voicecraft/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="lead"><strong>Text: </strong>And especially as I am not very much up in latin myself, he said, the suit was on <span style="text-decoration: line-through black; color: lightcoral;">an insurance policy</span> <span style="color: lightblue;">a classified treasure map</span> that he was defending on the ground of misinterpretations.</p>
+          <div class="table-responsive">
+            <table class="table">
+              <tbody>
+                <tr>
+                  <td>Original</td>
+                  <td>StyleTTS-ZS</td>
+                  <td>VoiceBox</td>
+                  <td>VoiceCraft</td>
+                </tr>
+                <tr>
+                  <td>
+                    <audio controls="" preload="none" style="width: 250px">
+                      <source src="./samples/edit/original/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 250px">
+                      <source src="./samples/edit/styletts/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 250px">
+                      <source src="./samples/edit/voicebox/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 250px">
+                      <source src="./samples/edit/voicecraft/1.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="lead"><strong>Text: </strong>In zero weather, in mid-winter, when <span style="text-decoration: line-through black; color: lightcoral;">the earth is frozen to a great depth below the surface</span> <span style="color: lightblue;">jack frost has cast his icy spell upon the land</span>, when in driving over the unpaved country roads, they give forth a hard metallic ring.</p>
+          <div class="table-responsive">
+            <table class="table">
+              <tbody>
+                <tr>
+                  <td>Original</td>
+                  <td>StyleTTS-ZS</td>
+                  <td>VoiceBox</td>
+                  <td>VoiceCraft</td>
+                </tr>
+                <tr>
+                  <td>
+                    <audio controls="" preload="none" style="width: 250px">
+                      <source src="./samples/edit/original/0.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 250px">
+                      <source src="./samples/edit/styletts/0.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 250px">
+                      <source src="./samples/edit/voicebox/0.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 250px">
+                      <source src="./samples/edit/voicecraft/0.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="lead"><strong>Text: </strong>This was george steers the son of a british naval captain and ship modeler who had become an american naval officer and was <span style="text-decoration: line-through black; color: lightcoral;">the first man to take charge of the washington navy yard</span> <span style="color: lightblue;">entrusted with the prestigious role of overseeing the operations at the renowned naval headquarters</span>.</p>
+          <div class="table-responsive">
+            <table class="table">
+              <tbody>
+                <tr>
+                  <td>Original</td>
+                  <td>StyleTTS-ZS</td>
+                  <td>VoiceBox</td>
+                  <td>VoiceCraft</td>
+                </tr>
+                <tr>
+                  <td>
+                    <audio controls="" preload="none" style="width: 250px">
+                      <source src="./samples/edit/original/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 250px">
+                      <source src="./samples/edit/styletts/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 250px">
+                      <source src="./samples/edit/voicebox/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 250px">
+                      <source src="./samples/edit/voicecraft/5.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="container pt-5 mt-5 shadow p-5 mb-5 bg-white rounded">
+          <h3>Voice Conversion</h3>
+          <p class="lead">The following audio samples are obtained from 
+            <a href="https://speechresearch.github.io/naturalspeech2/">NaturalSpeech 2's demo page</a>.
+          </p>
+          <p class="lead"><strong>Text: </strong>The children the most blood-curdling ideas, to hate God, for instance.</p>
+          <div class="table-responsive">
+            <table class="table">
+              <tbody>
+                <tr>
+                  <td>Prompt</td>
+                  <td>Source</td>
+                  <td>StyleTTS-ZS</td>
+                  <td>NaturalSpeech 2</td>
+                </tr>
+                <tr>
+                  <td>
+                    <audio controls="" preload="none" style="width: 250px">
+                      <source src="./samples/vc/prompt/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 250px">
+                      <source src="./samples/vc/source/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 250px">
+                      <source src="./samples/vc/styletts/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 250px">
+                      <source src="./samples/vc/ns2/2.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="lead"><strong>Text: </strong>Oh, Bartley, that old about my being hard!</p>
+          <div class="table-responsive">
+            <table class="table">
+              <tbody>
+                <tr>
+                  <td>Prompt</td>
+                  <td>Source</td>
+                  <td>StyleTTS-ZS</td>
+                  <td>NaturalSpeech 2</td>
+                </tr>
+                <tr>
+                  <td>
+                    <audio controls="" preload="none" style="width: 250px">
+                      <source src="./samples/vc/prompt/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 250px">
+                      <source src="./samples/vc/source/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 250px">
+                      <source src="./samples/vc/styletts/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                  <td>
+                    <audio controls="" preload="none" style="width: 250px">
+                      <source src="./samples/vc/ns2/3.wav" type="audio/wav">
+                    </audio>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <script src="./statics/jquery/jquery-3.7.1.slim.min.js"></script>
+	  <script>
+	    $(function(){
+        $("audio").on("play", function() {
+            $("audio").not(this).each(function(index, audio) {
+                audio.pause();
+            });
+        });
+    });
+	  </script>
+    <script src="./statics/bootstrap-5.2.3-dist/bootstrap.min.js"></script>
+  </body>
+</html>
